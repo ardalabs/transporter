@@ -1,3 +1,4 @@
+// propose to upload to S3
 export interface IS3Metadata {
   fieldname?: string;
   originalname?: string;

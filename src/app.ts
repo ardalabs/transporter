@@ -1,25 +1,24 @@
 import 'module-alias/register';
-import { IServices } from '@util/shared/interface';
-
+import { logger } from '@util/logger/logger';
+import kernel,{ Kernel } from '@core/kernel';
 interface IApps {
   listen(): void;
-  initController(_c: IServices[]): void;
-  initReportController(_c: IServices[]): void;
-  initSimulator(_c: IServices[]): void;
+  initializeCoreServices(): Promise<void>;
 }
 
 export class App implements IApps {
-  listen(): void {
-    throw new Error("Method not implemented.");
+  kernel: Kernel;
+  constructor() {
+    this.kernel = new kernel.core()
+    this.initializeCoreServices();
   }
-  initController(_c: IServices[]): void {
-    throw new Error("Method not implemented.");
+  async initializeCoreServices(): Promise<void> {
+    logger.info('start all service from kernel');
+    new kernel.service().registerCommonServices(this.kernel.defaultServices);
+    new kernel.storage().connect();
   }
-  initReportController(_c: IServices[]): void {
-    throw new Error("Method not implemented.");
+  listen() {
+    logger.info('app listen starting');
+    this.kernel.appService();
   }
-  initSimulator(_c: IServices[]): void {
-    throw new Error("Method not implemented.");
-  } 
-
 }
