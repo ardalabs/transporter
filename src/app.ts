@@ -1,6 +1,7 @@
 import 'module-alias/register';
 import { logger } from '@util/logger/logger';
 import kernel,{ Kernel } from '@core/kernel';
+import { API_VERSION } from '@util/enum';
 interface IApps {
   listen(): void;
   initializeCoreServices(): Promise<void>;
@@ -14,7 +15,7 @@ export class App implements IApps {
   }
   async initializeCoreServices(): Promise<void> {
     logger.info('start all service from kernel');
-    new kernel.service().registerCommonServices(this.kernel.defaultServices);
+    new kernel.service().registerCommonServices(this.kernel.defaultServices, API_VERSION.V1);
     new kernel.storage().connect();
   }
   listen() {
