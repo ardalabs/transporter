@@ -7,7 +7,13 @@ declare global {
       api: ILooseObject;
       apiClient?: IRequestApiClient;
     }
+    interface String {
+      fancyFormat(opts: StringFormatOptions): string;
+    }
   }
+}
+export interface StringFormatOptions {
+  fancinessLevel: number;
 }
 declare module '*.json' {
   const value: any;
