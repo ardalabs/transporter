@@ -7,7 +7,11 @@ export default async function basicAuth(
   res: express.Response,
   next: express.NextFunction
 ) {
-  if (req.path === '/app/ping'||req.path === '/app/stellar' || req.path === '/app/m/hook') {
+  if (
+    req.path === '/app/ping' ||
+    req.path === '/app/stellar' ||
+    req.path === '/app/m/hook'
+  ) {
     next();
   } else {
     if (

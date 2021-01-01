@@ -15,14 +15,19 @@ export const logger: winston.Logger = winston.createLogger({
     winston.format.timestamp(),
     winston.format.align(),
     winston.format.printf((debug) => {
-     const {
-      // tslint:disable-next-line: no-shadowed-variable
-      timestamp, level, message, ...args
-     } = debug;
-     const ts = timestamp.slice(0, 19).replace('T', ' ');
-     return `${ts} [${level}]: ${message} ${Object.keys(args).length ? JSON.stringify(args, null, 2) : ''}`;
+      const {
+        // tslint:disable-next-line: no-shadowed-variable
+        timestamp,
+        level,
+        message,
+        ...args
+      } = debug;
+      const ts = timestamp.slice(0, 19).replace('T', ' ');
+      return `${ts} [${level}]: ${message} ${
+        Object.keys(args).length ? JSON.stringify(args, null, 2) : ''
+      }`;
     })
-   ),
+  ),
   transports: [new winston.transports.Console({ level: 'info' })]
 });
 const env = process.env.NODE_ENV;

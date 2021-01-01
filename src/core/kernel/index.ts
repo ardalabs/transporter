@@ -1,6 +1,6 @@
 import { ArdaAppUse } from './arda.app.use';
 import { ArdaServiceModule } from './arda.service.module';
-import { ArdaStorage,QueryProxy } from './arda.storage';
+import { ArdaStorage, QueryProxy } from './arda.storage';
 import { ArdaCacheManager } from './arda.cache';
 import { Kernel } from './arda.core';
 
@@ -12,9 +12,9 @@ export * from './arda.core';
 
 export default {
   use: ArdaAppUse,
-  queryproxy:QueryProxy,
+  queryproxy: QueryProxy,
   core: Kernel,
   service: ArdaServiceModule,
   storage: ArdaStorage,
   cache: ArdaCacheManager
-}
+};

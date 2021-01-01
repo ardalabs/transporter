@@ -53,9 +53,9 @@ export class ArdaCacheManager implements ICacheManager {
   deleteKey(key: string): void {
     const evalRedis = // little fancy atomic lua script based on
       // http://stackoverflow.com/a/16974060/3202588
-      'local keysToDelete = redis.call(\'keys\', ARGV[1]) ' + // find keys with wildcard
+      "local keysToDelete = redis.call('keys', ARGV[1]) " + // find keys with wildcard
       'if unpack(keysToDelete) ~= nil then ' + // if there are any keys
-      'return redis.call(\'del\', unpack(keysToDelete)) ' + // delete all
+      "return redis.call('del', unpack(keysToDelete)) " + // delete all
       'else ' +
       'return 0 ' + // if no keys to delete
       'end ';

@@ -3,10 +3,10 @@ export interface IAppBaseWorker {
 }
 export class AppBaseWorker implements IAppBaseWorker {
   // tslint:disable-next-line: no-empty
-  constructor() { }
+  constructor() {}
   ping(): Promise<any> {
     return new Promise((resolve, reject) => {
       resolve('PONG');
-    })
+    });
   }
 }

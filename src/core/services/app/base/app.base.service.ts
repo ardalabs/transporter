@@ -21,7 +21,6 @@ export class AppBaseService implements IServices {
     res: express.Response,
     next: express.NextFunction
   ) => {
-
     return res
       .status(200)
       .send(

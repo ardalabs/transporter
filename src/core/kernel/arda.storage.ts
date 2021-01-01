@@ -30,7 +30,6 @@ export interface IRepository {
   aggregate(data?: any): Promise<any>;
 }
 
-
 interface IArdaStorage {
   connect(): void;
 }
@@ -48,14 +47,13 @@ export class ArdaStorage extends Kernel implements IArdaStorage {
         useNewUrlParser: true
       })
       .then((data: any) => {
-        logger.info('Connected');
+        logger.info('Connected to storage engine');
       })
       .catch((err) => {
         logger.error('Not Connected to Database ERROR! ', err);
       });
   }
 }
-
 
 // tslint:disable-next-line: max-classes-per-file
 export class QueryProxy implements IRepository {
@@ -351,4 +349,3 @@ export class QueryProxy implements IRepository {
   }
 }
 export default QueryProxy;
-
