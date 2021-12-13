@@ -2,7 +2,7 @@ import { APISTATUS } from '@util/enum';
 import { IServices } from '@util/shared/interface/IServices';
 import express from 'express';
 import { HttpOutput } from '@util/shared/httpOutput';
-import { AppBaseWorker } from './app.base.worker';
+import { AppBaseWorker } from '@core/worker/app/base/app.base.worker';
 
 export class AppBaseService implements IServices {
   path = '/app';

@@ -1,9 +1,9 @@
 import { Kernel } from './arda.core';
 import { IServices } from '@util/shared/interface';
 import express from 'express';
-import { AppBaseService } from '@core/services/app';
 import { API_VERSION } from '@util/enum/common';
 import basicAuth from '@util/auth/basicAuth';
+import { AppBaseService } from '@core/services/app/base/app.base.service';
 
 const commonServices: IServices[] = [new AppBaseService()];
 

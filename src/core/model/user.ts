@@ -55,7 +55,7 @@ mailOperationLogSchema.pre('findOneAndUpdate', function () {
     }
   );
 });
-export const User = mongoose.model<IUser & mongoose.Document>(
+export const User = mongoose.model<any>(
   'User',
   mailOperationLogSchema
 );
