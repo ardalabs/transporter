@@ -1,3 +1,4 @@
+import { CONFIG } from '@util/config/config';
 import { Kernel } from './arda.core';
 import mongoose from 'mongoose';
 import { logger } from '@util/logger/logger';
@@ -8,9 +9,7 @@ export interface IRepository {
   replaceOne(data?: any, replacement?: any): Promise<any>;
   findAll(
     data?: any,
-    params?: any,
-    skip?: number,
-    limit?: number
+    params?: any
   ): Promise<any>;
   findById(id: string, params?: any): Promise<any>;
   findByIdAndUpdate(id: string, params?: any): Promise<any>;
@@ -23,9 +22,7 @@ export interface IRepository {
   findLatest(data: any, params?: any): Promise<any>;
   findOne(
     data?: any,
-    params?: any,
-    skip?: number,
-    limit?: number
+    params?: any
   ): Promise<any>;
   aggregate(data?: any): Promise<any>;
 }
@@ -41,10 +38,11 @@ export class ArdaStorage extends Kernel implements IArdaStorage {
       mongoose.set('debug', true);
     }
     mongoose.Promise = global.Promise;
-    mongoose.set('useUnifiedTopology', true);
     mongoose
       .connect(this.dbUrl, {
-        useNewUrlParser: true
+        autoIndex: true,
+        appName: CONFIG.NAME,
+        maxPoolSize: parseInt(CONFIG.DB_MAX_POOL_SIZE)
       })
       .then((data: any) => {
         logger.info('Connected to storage engine');
@@ -163,7 +161,7 @@ export class QueryProxy implements IRepository {
       const q = this.model
         .find(data)
         .populate(params.populate ? params.populate : '')
-        .maxTimeMS(300000)
+        .maxTimeMS(parseInt(CONFIG.DB_QUERY_TIMEOUT))
         // tslint:disable-next-line: no-empty
         .skip((await this.model.count({}, (_e: any, _c: any) => {})) - 1)
         .select(params.filter ? params.filter : '');
@@ -192,7 +190,7 @@ export class QueryProxy implements IRepository {
       const q = this.model
         .findById(id)
         .populate(params.populate ? params.populate : '')
-        .maxTimeMS(300000)
+        .maxTimeMS(parseInt(CONFIG.DB_QUERY_TIMEOUT))
         .lean(true)
         .select(params.filter ? params.filter : '');
       q.setOptions({
@@ -279,14 +277,12 @@ export class QueryProxy implements IRepository {
 
   public async findOne(
     data?: any,
-    params?: any,
-    _skip?: number,
-    _limit?: number
+    params?: any
   ): Promise<any> {
     const p = new Promise((resolve, reject) => {
       const q = this.model
         .findOne(data)
-        .maxTimeMS(300000)
+        .maxTimeMS(parseInt(CONFIG.DB_QUERY_TIMEOUT))
         .populate(params.populate ? params.populate : '')
         .select(params.selected ? params.selected : '');
       q.setOptions({
@@ -322,14 +318,10 @@ export class QueryProxy implements IRepository {
   public async findAll(
     data?: any,
     params?: any,
-    skip?: number,
-    limit?: number
   ): Promise<any> {
     const p = new Promise((resolve, reject) => {
       const q = this.model.find(data);
       q.sort(params.sort ? params.sort : '');
-      q.limit(limit ? limit : 10);
-      q.skip(skip ? skip : 0);
       q.populate(params.populate ? params.populate : '');
       q.select(params.selected ? params.selected : '');
       q.setOptions({
