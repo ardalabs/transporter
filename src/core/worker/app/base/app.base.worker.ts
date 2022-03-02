@@ -1,7 +1,5 @@
-export interface IAppBaseWorker {
-  ping(): Promise<any>;
-}
-export class AppBaseWorker implements IAppBaseWorker {
+
+export class AppBaseWorker {
   // tslint:disable-next-line: no-empty
   constructor() {}
   ping(): Promise<any> {
