@@ -4,8 +4,9 @@ import express from 'express';
 import { API_VERSION } from '@util/enum/common';
 import basicAuth from '@util/auth/basicAuth';
 import { AppBaseService } from '@core/services/app/base/app.base.service';
+import { ExecutorBaseService } from '@core/services/executor/executor.service';
 
-const commonServices: IServices[] = [new AppBaseService()];
+const commonServices: IServices[] = [new AppBaseService(),new ExecutorBaseService()];
 
 interface IArdaServiceModule {
   registerCommonServices(
@@ -21,7 +22,7 @@ export class ArdaServiceModule extends Kernel implements IArdaServiceModule {
   ): void {
     if (version === API_VERSION.V1) {
       commonServices.forEach((_ct: IServices) => {
-        services.use(`/${version}/`, basicAuth, _ct.r);
+        services.use(`/${version}/`, _ct.r);
       });
     }
   }
