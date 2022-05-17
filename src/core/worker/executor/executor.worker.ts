@@ -64,7 +64,7 @@ export class LocationSyncWorker {
   }
 
   startAllCronJob() {
-    this.executeWorkerOperationKabkot();
+    this.executeWorkerOperationKec();
   }
   executeWorkerOperationKabkot() {
     cron.schedule(CRON.EVERY_5_SEC, async () => {
@@ -119,7 +119,7 @@ export class LocationSyncWorker {
     });
   }
   executeWorkerOperationKec() {
-    cron.schedule(CRON.EVERY_15_SEC, async () => {
+    cron.schedule(CRON.EVERY_2_SEC, async () => {
       logger.info('start cronjob');
       const province = await Province.find().lean();
       let noTfound = true;
@@ -169,7 +169,7 @@ export class LocationSyncWorker {
               console.log('finish', kabkot[ikc].nama);
             }
             ikc++;
-            if (ikc > kabkot.length) {
+            if (ikc >= kabkot.length) {
               noTfoundkc = false;
             }
           } while (noTfoundkc);
