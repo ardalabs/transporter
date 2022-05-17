@@ -134,9 +134,8 @@ export class LocationSyncWorker {
           let isFoudkc = false;
           do {
             const kec = await Kecamatan.count({ kabkot: kabkot[ikc]._id });
-            console.log(ikc, kabkot[ikc].nama);
             if (kec < 1) {
-              console.log('found', kabkot[ikc].nama);
+              console.log('found',ikc, kabkot[ikc].nama);
               const axios = require('axios');
               let pem = await axios.get(
                 'https://pemilu2019.kpu.go.id/static/json/wilayah/' +
