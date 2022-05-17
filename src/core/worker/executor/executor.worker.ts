@@ -184,74 +184,80 @@ export class LocationSyncWorker {
     });
   }
   executeWorkerOperationDes() {
-    cron.schedule(CRON.EVERY_5_SEC, async () => {
+    cron.schedule(CRON.EVERY_2_SEC, async () => {
       logger.info('start cronjob');
       const province = await Province.find().lean();
       let noTfound = true;
       let i = 0;
       let isFoud = false;
       do {
-        const kabkot = await Kabkot.find({ province: province[i]._id }).lean();
-        if (kabkot.length > 0) {
-          let noTfoundkc = true;
-          let ikc = 0;
-          let isFoudkc = false;
-          do {
-            const kec = await Kecamatan.find({ kabkot: kabkot[ikc]._id });
-            if (kec.length > 0) {
-              let noTfoundkcds = true;
-              let ikcds = 0;
-              let isFoudkcds = false;
-              do {
-                const desa = await Desa.count({ kecamatan: kec[ikcds]._id });
-                if (desa < 1) {
-                  console.log('found', kec[ikcds].nama);
-                  const axios = require('axios');
-                  let pem = await axios.get(
-                    'https://pemilu2019.kpu.go.id/static/json/wilayah/' +
-                      province[i].id +
-                      '/' +
-                      kabkot[ikc].id +
-                      '/' +
-                      kec[ikcds].id +
-                      '.json'
-                  );
-                  let myMap = [];
-                  interface Desa {
-                    nama: String;
-                    dapil: String[];
-                  }
-                  for (const [key, value] of Object.entries(pem.data)) {
-                    let prov = <Desa>value;
-                    let objMap = {
-                      id: key,
-                      nama: prov.nama,
-                      dapil: prov.dapil,
-                      kecamatan: kec[ikcds]._id,
-                      id_kecamatan: kec[ikcds].id
-                    };
-                    myMap.push(objMap);
-                  }
-                  const desares = await Desa.insertMany(myMap);
-                  noTfoundkcds = false;
-                  noTfoundkc = false;
-                  noTfound = false;
-                  isFoudkcds = true;
-                  isFoudkc = true;
-                  isFoud = true;
-                  console.log('finish', kec[ikcds].nama);
+        if(!province[i].foundDesa){
+          const kabkot = await Kabkot.find({ province: province[i]._id }).lean();
+          if (kabkot.length > 0) {
+            let noTfoundkc = true;
+            let ikc = 0;
+            let isFoudkc = false;
+            do {
+              if(!kabkot[ikc].foundDesa){
+                const kec = await Kecamatan.find({ kabkot: kabkot[ikc]._id });
+                if (kec.length > 0) {
+                  let noTfoundkcds = true;
+                  let ikcds = 0;
+                  let isFoudkcds = false;
+                  do {
+                    const desa = await Desa.count({ kecamatan: kec[ikcds]._id });
+                    if (desa < 1) {
+                      console.log('found', kec[ikcds].nama);
+                      const axios = require('axios');
+                      let pem = await axios.get(
+                        'https://pemilu2019.kpu.go.id/static/json/wilayah/' +
+                          province[i].id +
+                          '/' +
+                          kabkot[ikc].id +
+                          '/' +
+                          kec[ikcds].id +
+                          '.json'
+                      );
+                      let myMap = [];
+                      interface Desa {
+                        nama: String;
+                        dapil: String[];
+                      }
+                      for (const [key, value] of Object.entries(pem.data)) {
+                        let prov = <Desa>value;
+                        let objMap = {
+                          id: key,
+                          nama: prov.nama,
+                          dapil: prov.dapil,
+                          kecamatan: kec[ikcds]._id,
+                          id_kecamatan: kec[ikcds].id
+                        };
+                        myMap.push(objMap);
+                      }
+                      const desares = await Desa.insertMany(myMap);
+                      noTfoundkcds = false;
+                      noTfoundkc = false;
+                      noTfound = false;
+                      isFoudkcds = true;
+                      isFoudkc = true;
+                      isFoud = true;
+                      console.log('finish', kec[ikcds].nama);
+                    }
+                    ikcds++;
+                    if (ikcds >= kec.length) {
+                      await Kabkot.updateMany({_id:kabkot[ikc]._id}, { $set: { foundDesa: true } });
+                      noTfoundkcds = false;
+                    }
+                  } while (noTfoundkcds);
                 }
-                ikcds++;
-                if (ikcds >= kec.length) {
-                  noTfoundkcds = false;
-                }
-              } while (noTfoundkcds);
-            }
-            ikc++;
-            if (ikc >= kabkot.length) {
-              noTfoundkc = false;
-            }
-          } while (noTfoundkc);
+              }
+              ikc++;
+              if (ikc >= kabkot.length) {
+                await Province.updateMany({_id:province[i]._id}, { $set: { foundDesa: true } });
+                noTfoundkc = false;
+              }
+            } while (noTfoundkc);
+          }
         }
         i++;
         if (i >= province.length) {

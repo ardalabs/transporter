@@ -6,5 +6,6 @@ const KabkotSchema = new mongoose.Schema({
     id_province: String,
     nama: String,
     dapil: Array,
+    foundDesa: Boolean,
   });
 export const Kabkot = mongoose.model<any>('Kabkot', KabkotSchema)
