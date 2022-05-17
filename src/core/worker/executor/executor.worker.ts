@@ -33,30 +33,30 @@ export class ExecutorWorker {
       resolve('sukses');
     });
   }
-  getKabkot(): Promise<any> {
-    return new Promise(async (resolve, reject) => {
-      const axios = require('axios');
-      let pem = await axios.get(
-        'https://pemilu2019.kpu.go.id/static/json/wilayah/0.json'
-      );
-      let myMap = [];
-      interface Province {
-        nama: String;
-        dapil: String[];
-      }
-      for (const [key, value] of Object.entries(pem.data)) {
-        let prov = <Province>value;
-        let objMap = {
-          id: key,
-          nama: prov.nama,
-          dapil: prov.dapil
-        };
-        myMap.push(objMap);
-      }
-      Province.insertMany(myMap);
-      resolve('sukses');
-    });
-  }
+  // getKabkot(): Promise<any> {
+  //   return new Promise(async (resolve, reject) => {
+  //     const axios = require('axios');
+  //     let pem = await axios.get(
+  //       'https://pemilu2019.kpu.go.id/static/json/wilayah/0.json'
+  //     );
+  //     let myMap = [];
+  //     interface Province {
+  //       nama: String;
+  //       dapil: String[];
+  //     }
+  //     for (const [key, value] of Object.entries(pem.data)) {
+  //       let prov = <Province>value;
+  //       let objMap = {
+  //         id: key,
+  //         nama: prov.nama,
+  //         dapil: prov.dapil
+  //       };
+  //       myMap.push(objMap);
+  //     }
+  //     Province.insertMany(myMap);
+  //     resolve('sukses');
+  //   });
+  // }
 }
 
 export class LocationSyncWorker {
@@ -184,7 +184,7 @@ export class LocationSyncWorker {
     });
   }
   executeWorkerOperationDes() {
-    cron.schedule(CRON.EVERY_15_SEC, async () => {
+    cron.schedule(CRON.EVERY_5_SEC, async () => {
       logger.info('start cronjob');
       const province = await Province.find().lean();
       let noTfound = true;

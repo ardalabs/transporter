@@ -15,7 +15,7 @@ export class App implements IApps {
     this.kernel = new kernel.core();
     this.initializeCoreServices();
     this.scheduller = new LocationSyncWorker()
-    // this.scheduller.executeWorkerOperation
+    this.scheduller.startAllCronJob()
   }
   async initializeCoreServices(): Promise<void> {
     logger.info('start all service from kernel');
