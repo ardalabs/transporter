@@ -100,9 +100,12 @@ export class LocationSyncWorker {
               province: province[i]._id,
               id_province: province[i].id
             };
-            myMap.push(objMap);
+            const exInDb =  await Kabkot.find({ id:key }).count()
+            if (exInDb < 1) {
+              myMap.push(objMap);
+            }
           }
-          const kabkotres = await Kabkot.insertMany(myMap);
+          await Kabkot.insertMany(myMap);
           noTfound = false;
           isFoud = true;
           console.log('finish', province[i].nama);
@@ -199,7 +202,7 @@ export class LocationSyncWorker {
           let isFoudkc = false;
           do {
             const kec = await Kecamatan.find({ kabkot: kabkot[ikc]._id });
-            console.log("Kot",ikc, kabkot[ikc].nama);
+            console.log('Kot', ikc, kabkot[ikc].nama);
             if (kec.length > 0) {
               let noTfoundkcds = true;
               let ikcds = 0;
