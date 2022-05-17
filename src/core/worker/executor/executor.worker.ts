@@ -61,12 +61,10 @@ export class ExecutorWorker {
 
 export class LocationSyncWorker {
   constructor() {
-    console.log('cons');
-    this.startAllCronJob();
   }
 
   startAllCronJob() {
-    this.executeWorkerOperationDes();
+    this.executeWorkerOperationKabkot();
   }
   executeWorkerOperationKabkot() {
     cron.schedule(CRON.EVERY_5_SEC, async () => {
