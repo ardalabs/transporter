@@ -69,7 +69,7 @@ export class LocationSyncWorker {
     this.executeWorkerOperationDes();
   }
   executeWorkerOperationKabkot() {
-    cron.schedule(CRON.EVERY_15_SEC, async () => {
+    cron.schedule(CRON.EVERY_5_SEC, async () => {
       logger.info('start cronjob');
       const province = await Province.find().lean();
       let noTfound = true;
