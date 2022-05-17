@@ -246,13 +246,13 @@ export class LocationSyncWorker {
                   console.log('finish', kec[ikcds].nama);
                 }
                 ikcds++;
-                if (ikcds > kec.length) {
+                if (ikcds >= kec.length) {
                   noTfoundkcds = false;
                 }
               } while (noTfoundkcds);
             }
             ikc++;
-            if (ikc > kabkot.length) {
+            if (ikc >= kabkot.length) {
               noTfoundkc = false;
             }
           } while (noTfoundkc);

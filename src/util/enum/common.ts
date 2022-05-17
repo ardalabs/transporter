@@ -8,6 +8,7 @@ export enum APISTATUS {
   STATUS_BASIC_AUTH_MISSING = 'Missing Authorization Header'
 }
 export enum CRON {
+  EVERY_2_SEC = '*/2 * * * * *',
   EVERY_5_SEC = '*/5 * * * * *',
   EVERY_15_SEC = '*/15 * * * * *',
   EVERY_1_MIN = '*/1 * * * *',
