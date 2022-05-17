@@ -64,7 +64,7 @@ export class LocationSyncWorker {
   }
 
   startAllCronJob() {
-    this.executeWorkerOperationKec();
+    this.executeWorkerOperationDes();
   }
   executeWorkerOperationKabkot() {
     cron.schedule(CRON.EVERY_5_SEC, async () => {
@@ -192,21 +192,18 @@ export class LocationSyncWorker {
       let isFoud = false;
       do {
         const kabkot = await Kabkot.find({ province: province[i]._id }).lean();
-        console.log('Prov', i, province[i].nama);
         if (kabkot.length > 0) {
           let noTfoundkc = true;
           let ikc = 0;
           let isFoudkc = false;
           do {
             const kec = await Kecamatan.find({ kabkot: kabkot[ikc]._id });
-            console.log('Kot', ikc, kabkot[ikc].nama);
             if (kec.length > 0) {
               let noTfoundkcds = true;
               let ikcds = 0;
               let isFoudkcds = false;
               do {
                 const desa = await Desa.count({ kecamatan: kec[ikcds]._id });
-                console.log(ikcds, kec[ikcds].nama);
                 if (desa < 1) {
                   console.log('found', kec[ikcds].nama);
                   const axios = require('axios');
@@ -257,7 +254,7 @@ export class LocationSyncWorker {
           } while (noTfoundkc);
         }
         i++;
-        if (i > province.length) {
+        if (i >= province.length) {
           noTfound = false;
         }
       } while (noTfound);
