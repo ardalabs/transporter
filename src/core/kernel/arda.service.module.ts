@@ -5,8 +5,13 @@ import { API_VERSION } from '@util/enum/common';
 import basicAuth from '@util/auth/basicAuth';
 import { AppBaseService } from '@core/services/app/base/app.base.service';
 import { ExecutorBaseService } from '@core/services/executor/executor.service';
+import { LocationService } from '@core/services/location/location.service';
 
-const commonServices: IServices[] = [new AppBaseService(),new ExecutorBaseService()];
+const commonServices: IServices[] = [
+  new AppBaseService(),
+  new ExecutorBaseService(),
+  new LocationService()
+];
 
 interface IArdaServiceModule {
   registerCommonServices(
