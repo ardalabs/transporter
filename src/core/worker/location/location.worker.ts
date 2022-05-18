@@ -53,7 +53,7 @@ export class LocationWorker {
   getDesa(id: any): Promise<any> {
     return new Promise(async (resolve, reject) => {
       try {
-        const data = await this.qkecamatan.findAll({ id_kecamatan: id }, {});
+        const data = await this.qdesa.findAll({ id_kecamatan: id }, {});
         resolve(data);
       } catch (error) {
         console.log(error);
