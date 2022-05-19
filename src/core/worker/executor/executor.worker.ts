@@ -132,6 +132,7 @@ export class LocationSyncWorker {
           let myMap: Array<any> = [];
           interface Dapilprov {
             id: String;
+            id_province: String;
             nama: String;
             wilayah: Array<String>;
             jml_kursi: Number;
@@ -149,6 +150,7 @@ export class LocationSyncWorker {
               });
               let objMap = {
                 id: dapil.id,
+                id_province:province[i].id,
                 province: province[i]._id,
                 nama: dapil.nama,
                 jml_kursi: dapil.totalAlokasiKursi,
