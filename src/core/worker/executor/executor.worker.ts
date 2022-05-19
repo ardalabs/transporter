@@ -149,6 +149,7 @@ export class LocationSyncWorker {
               let wilayah: Array<any> = [];
               for (const elementW of dapil.wilayah) {
                 const prv:any = await Kabkot.findOne({id:elementW.idWilayah}).lean()
+                wilayah.push(prv._id);
               }
               let objMap = {
                 id: dapil.id,
@@ -225,9 +226,10 @@ export class LocationSyncWorker {
                   for (const value of valueParent.dapil) {
                     let dapil = <any>value;
                     let wilayah: Array<any> = [];
-                    dapil.wilayah.forEach((elementW: any) => {
-                      wilayah.push(elementW.idWilayah);
-                    });
+                    for (const elementW of dapil.wilayah) {
+                      const prv:any = await Kecamatan.findOne({id:elementW.idWilayah}).lean()
+                      wilayah.push(prv._id);
+                    }
                     let objMap = {
                       id: dapil.id,
                       id_province: province[i].id,
