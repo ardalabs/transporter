@@ -14,7 +14,7 @@ export class App implements IApps {
   constructor() {
     this.kernel = new kernel.core();
     this.locationSyncWorker = new LocationSyncWorker();
-    this.locationSyncWorker.executeWorkerOperationDapilDprkbakot();
+    this.locationSyncWorker.executeWorkerOperationDapilDprri();
     this.initializeCoreServices();
   }
   async initializeCoreServices(): Promise<void> {
