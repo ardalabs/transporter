@@ -169,9 +169,6 @@ export class LocationSyncWorker {
                 wilayah,
                 wilayahKec
               };
-              console.log(objMap);
-              
-
               const exInDb = await Dapilprov.find({ id: dapil.id }).count();
               if (exInDb < 1) {
                 myMap.push(objMap);
