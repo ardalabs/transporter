@@ -3,6 +3,7 @@ import { Kabkot } from '@core/model/Kabkot';
 import { Desa } from '@core/model/Desa';
 import { Kecamatan } from '@core/model/Kecamatan';
 import { Dapilri } from '@core/model/Dapilri';
+import { Dapilprov } from '@core/model/Dapilprov';
 import * as cron from 'node-cron';
 import { CRON } from '@util/enum/common';
 import { logger } from '@util/logger/logger';
@@ -52,7 +53,6 @@ export class LocationSyncWorker {
       do {
         const dapilri = await Dapilri.count({ province: province[i]._id });
         console.log(i, province[i].nama);
-        console.log(dapilri);
         if (dapilri < 1) {
           console.log('found', province[i].nama);
           const axios = require('axios');
@@ -97,6 +97,74 @@ export class LocationSyncWorker {
             }
           }
           await Dapilri.insertMany(myMap);
+          noTfound = false;
+          isFoud = true;
+          console.log('finish', province[i].nama);
+        }
+        i++;
+        if (i > province.length) {
+          noTfound = false;
+        }
+      } while (noTfound);
+      if (!isFoud) {
+        logger.info('finish cronjob kabkot');
+      }
+    });
+  }
+  executeWorkerOperationDapilDprprov() {
+    cron.schedule(CRON.EVERY_2_SEC, async () => {
+      logger.info('start cronjob');
+      const province = await Province.find().lean();
+      let noTfound = true;
+      let i = 0;
+      let isFoud = false;
+      do {
+        const dapilprov = await Dapilprov.count({ province: province[i]._id });
+        console.log(i, province[i].nama);
+        if (dapilprov < 1) {
+          console.log('found', province[i].nama);
+          const axios = require('axios');
+          let pem = await axios.get(
+            'https://infopemilu.kpu.go.id/pileg2019/api/dapil/' +
+              province[i].id +
+              '/1'
+          );
+          let myMap: Array<any> = [];
+          interface Dapilprov {
+            id: String;
+            nama: String;
+            wilayah: Array<String>;
+            jml_kursi: Number;
+            idVersi: String;
+            noDapil: String;
+            statusCoterminous: Boolean;
+          }
+          for (const valueParent of pem.data) {
+            for (const value of valueParent.dapil) {
+
+              let dapil = <any>value;
+              let wilayah: Array<any> = [];
+              dapil.wilayah.forEach((elementW: any) => {
+                wilayah.push(elementW.idWilayah);
+              });
+              let objMap = {
+                id: dapil.id,
+                province: province[i]._id,
+                nama: dapil.nama,
+                jml_kursi: dapil.totalAlokasiKursi,
+                idVersi: dapil.idVersi,
+                noDapil: dapil.noDapil,
+                statusCoterminous: dapil.statusCoterminous,
+                wilayah
+              };
+
+              const exInDb = await Dapilprov.find({ id: dapil.id }).count();
+              if (exInDb < 1) {
+                myMap.push(objMap);
+              }
+            }
+          }
+          await Dapilprov.insertMany(myMap);
           noTfound = false;
           isFoud = true;
           console.log('finish', province[i].nama);
