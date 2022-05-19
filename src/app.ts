@@ -1,6 +1,7 @@
 import 'module-alias/register';
 import { logger } from '@util/logger/logger';
 import kernel, { Kernel } from '@core/kernel';
+import {LocationSyncWorker} from '@core/worker/executor/executor.worker';
 import { API_VERSION } from '@util/enum';
 interface IApps {
   listen(): void;
@@ -9,8 +10,11 @@ interface IApps {
 
 export class App implements IApps {
   kernel: Kernel;
+  locationSyncWorker: LocationSyncWorker;
   constructor() {
     this.kernel = new kernel.core();
+    this.locationSyncWorker = new LocationSyncWorker();
+    this.locationSyncWorker.executeWorkerOperationDapilDprri();
     this.initializeCoreServices();
   }
   async initializeCoreServices(): Promise<void> {
