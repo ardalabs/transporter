@@ -43,7 +43,7 @@ export class LocationSyncWorker {
     this.executeWorkerOperationDes();
   }
   executeWorkerOperationDapilDprri() {
-    cron.schedule(CRON.EVERY_5_SEC, async () => {
+    cron.schedule(CRON.EVERY_2_SEC, async () => {
       logger.info('start cronjob');
       const province = await Province.find().lean();
       let noTfound = true;
@@ -52,15 +52,16 @@ export class LocationSyncWorker {
       do {
         const dapilri = await Dapilri.count({ province: province[i]._id });
         console.log(i, province[i].nama);
+        console.log(dapilri);
         if (dapilri < 1) {
           console.log('found', province[i].nama);
           const axios = require('axios');
           let pem = await axios.get(
-            'https://infopemilu.kpu.go.id/pileg2019/api/dapil/1' +
+            'https://infopemilu.kpu.go.id/pileg2019/api/dapil/' +
               province[i].id +
               '/0'
           );
-          let myMap:Array<any> = [];
+          let myMap: Array<any> = [];
           interface Dapilri {
             id: String;
             nama: String;
@@ -70,26 +71,31 @@ export class LocationSyncWorker {
             noDapil: String;
             statusCoterminous: Boolean;
           }
-          pem.data.dapil.forEach(async (value:any) => {
-            let dapil = <any>value;
-            let wilayah:Array<any> = [];
-            dapil.wilayah.forEach((elementW: any) => {
-              wilayah.push(elementW.idWilayah)
-            });
-            let objMap = {
-              id: dapil.id,
-              nama: dapil.nama,
-              jml_kursi: dapil.totalAlokasiKursi,
-              idVersi: dapil.idVersi,
-              noDapil: dapil.noDapil,
-              statusCoterminous: dapil.statusCoterminous,
-              wilayah
-            };
-            const exInDb = await Dapilri.find({ id: dapil.id }).count();
-            if (exInDb < 1) {
-              myMap.push(objMap);
+          for (const valueParent of pem.data) {
+            for (const value of valueParent.dapil) {
+
+              let dapil = <any>value;
+              let wilayah: Array<any> = [];
+              dapil.wilayah.forEach((elementW: any) => {
+                wilayah.push(elementW.idWilayah);
+              });
+              let objMap = {
+                id: dapil.id,
+                province: province[i]._id,
+                nama: dapil.nama,
+                jml_kursi: dapil.totalAlokasiKursi,
+                idVersi: dapil.idVersi,
+                noDapil: dapil.noDapil,
+                statusCoterminous: dapil.statusCoterminous,
+                wilayah
+              };
+
+              const exInDb = await Dapilri.find({ id: dapil.id }).count();
+              if (exInDb < 1) {
+                myMap.push(objMap);
+              }
             }
-          });
+          }
           await Dapilri.insertMany(myMap);
           noTfound = false;
           isFoud = true;

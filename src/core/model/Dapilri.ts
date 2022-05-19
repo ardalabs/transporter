@@ -1,5 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, {Schema} from 'mongoose';
 const DapilriSchema = new mongoose.Schema({
+    province: { type: Schema.Types.ObjectId, ref: 'Province' },
     id: String, 
     nama: String, 
     wilayah: Array,
