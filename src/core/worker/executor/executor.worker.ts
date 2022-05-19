@@ -246,12 +246,12 @@ export class LocationSyncWorker {
                   }
                 }
                 await Dapilkabkot.insertMany(myMap);
+                noTfoundkc = false;
+                noTfound = false;
+                isFoudkc = true;
+                isFoud = true;
+                console.log('finish', kabkot[ikc].nama);
               }
-              noTfoundkc = false;
-              noTfound = false;
-              isFoudkc = true;
-              isFoud = true;
-              console.log('finish', kabkot[ikc].nama);
             }
             ikc++;
             if (ikc >= kabkot.length) {
