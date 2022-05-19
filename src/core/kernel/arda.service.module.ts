@@ -6,11 +6,13 @@ import basicAuth from '@util/auth/basicAuth';
 import { AppBaseService } from '@core/services/app/base/app.base.service';
 import { ExecutorBaseService } from '@core/services/executor/executor.service';
 import { LocationService } from '@core/services/location/location.service';
+import { DapilService } from '@core/services/dapil/dapil.service';
 
 const commonServices: IServices[] = [
   new AppBaseService(),
   new ExecutorBaseService(),
-  new LocationService()
+  new LocationService(),
+  new DapilService()
 ];
 
 interface IArdaServiceModule {

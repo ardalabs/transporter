@@ -5,7 +5,7 @@ import { HttpOutput } from '@util/shared/httpOutput';
 import { AppBaseWorker } from '@core/worker/app/base/app.base.worker';
 import { DapilWorker } from '@core/worker/dapil/dapil.worker';
 
-export class LocationService implements IServices {
+export class DapilService implements IServices {
   path = '/dapil';
   r = express.Router();
   appBaseWorker?: AppBaseWorker;
