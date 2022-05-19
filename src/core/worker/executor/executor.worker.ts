@@ -217,39 +217,41 @@ export class LocationSyncWorker {
                 noDapil: String;
                 statusCoterminous: Boolean;
               }
-              for (const valueParent of pem.data) {
-                for (const value of valueParent.dapil) {
-                  let dapil = <any>value;
-                  let wilayah: Array<any> = [];
-                  dapil.wilayah.forEach((elementW: any) => {
-                    wilayah.push(elementW.idWilayah);
-                  });
-                  let objMap = {
-                    id: dapil.id,
-                    id_province: province[i].id,
-                    id_kabkot: kabkot[ikc].id,
-                    province: province[i]._id,
-                    kabkot: kabkot[ikc]._id,
-                    nama: dapil.nama,
-                    jml_kursi: dapil.totalAlokasiKursi,
-                    idVersi: dapil.idVersi,
-                    noDapil: dapil.noDapil,
-                    statusCoterminous: dapil.statusCoterminous,
-                    wilayah
-                  };
-
-                  const exInDb = await Dapilkabkot.find({ id: dapil.id }).count();
-                  if (exInDb < 1) {
-                    myMap.push(objMap);
+              if(pem.data.length>0){
+                for (const valueParent of pem.data) {
+                  for (const value of valueParent.dapil) {
+                    let dapil = <any>value;
+                    let wilayah: Array<any> = [];
+                    dapil.wilayah.forEach((elementW: any) => {
+                      wilayah.push(elementW.idWilayah);
+                    });
+                    let objMap = {
+                      id: dapil.id,
+                      id_province: province[i].id,
+                      id_kabkot: kabkot[ikc].id,
+                      province: province[i]._id,
+                      kabkot: kabkot[ikc]._id,
+                      nama: dapil.nama,
+                      jml_kursi: dapil.totalAlokasiKursi,
+                      idVersi: dapil.idVersi,
+                      noDapil: dapil.noDapil,
+                      statusCoterminous: dapil.statusCoterminous,
+                      wilayah
+                    };
+  
+                    const exInDb = await Dapilkabkot.find({ id: dapil.id }).count();
+                    if (exInDb < 1) {
+                      myMap.push(objMap);
+                    }
                   }
                 }
+                await Dapilkabkot.insertMany(myMap);
               }
-              await Dapilkabkot.insertMany(myMap);
               noTfoundkc = false;
               noTfound = false;
               isFoudkc = true;
               isFoud = true;
-              console.log('finish', province[i].nama);
+              console.log('finish', kabkot[ikc].nama);
             }
             ikc++;
             if (ikc >= kabkot.length) {
