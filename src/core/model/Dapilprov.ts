@@ -6,6 +6,9 @@ const DapilprovSchema = new mongoose.Schema({
     id: String, 
     nama: String, 
     wilayah: Array,
-    jml_kursi: Number
+    jml_kursi: Number,
+    idVersi: String,
+    noDapil: String,
+    statusCoterminous:Boolean,
 });
 export const Dapilprov = mongoose.model<any>('Dapilprov', DapilprovSchema)

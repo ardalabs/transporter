@@ -4,6 +4,7 @@ import { Desa } from '@core/model/Desa';
 import { Kecamatan } from '@core/model/Kecamatan';
 import { Dapilri } from '@core/model/Dapilri';
 import { Dapilprov } from '@core/model/Dapilprov';
+import { Dapilkabkot } from '@core/model/Dapilkab';
 import * as cron from 'node-cron';
 import { CRON } from '@util/enum/common';
 import { logger } from '@util/logger/logger';
@@ -73,7 +74,6 @@ export class LocationSyncWorker {
           }
           for (const valueParent of pem.data) {
             for (const value of valueParent.dapil) {
-
               let dapil = <any>value;
               let wilayah: Array<any> = [];
               dapil.wilayah.forEach((elementW: any) => {
@@ -142,7 +142,6 @@ export class LocationSyncWorker {
           }
           for (const valueParent of pem.data) {
             for (const value of valueParent.dapil) {
-
               let dapil = <any>value;
               let wilayah: Array<any> = [];
               dapil.wilayah.forEach((elementW: any) => {
@@ -150,7 +149,7 @@ export class LocationSyncWorker {
               });
               let objMap = {
                 id: dapil.id,
-                id_province:province[i].id,
+                id_province: province[i].id,
                 province: province[i]._id,
                 nama: dapil.nama,
                 jml_kursi: dapil.totalAlokasiKursi,
@@ -178,6 +177,93 @@ export class LocationSyncWorker {
       } while (noTfound);
       if (!isFoud) {
         logger.info('finish cronjob kabkot');
+      }
+    });
+  }
+  executeWorkerOperationDapilDprkbakot() {
+    cron.schedule(CRON.EVERY_2_SEC, async () => {
+      logger.info('start cronjob');
+      const province = await Province.find().lean();
+      let noTfound = true;
+      let i = 0;
+      let isFoud = false;
+      do {
+        const kabkot = await Kabkot.find({ province: province[i]._id }).lean();
+        console.log('Prov', i, province[i].nama);
+        if (kabkot.length > 0) {
+          let noTfoundkc = true;
+          let ikc = 0;
+          let isFoudkc = false;
+          do {
+            const dapilkabkot = await Dapilkabkot.count({
+              kabkot: kabkot[ikc]._id
+            });
+            if (dapilkabkot < 1) {
+              console.log('found', kabkot[ikc].nama);
+              const axios = require('axios');
+              let pem = await axios.get(
+                'https://infopemilu.kpu.go.id/pileg2019/api/dapil/' +
+                kabkot[ikc].id +
+                  '/2'
+              );
+              let myMap: Array<any> = [];
+              interface Dapilkabkot {
+                id: String;
+                id_kabkot: String;
+                nama: String;
+                wilayah: Array<String>;
+                jml_kursi: Number;
+                idVersi: String;
+                noDapil: String;
+                statusCoterminous: Boolean;
+              }
+              for (const valueParent of pem.data) {
+                for (const value of valueParent.dapil) {
+                  let dapil = <any>value;
+                  let wilayah: Array<any> = [];
+                  dapil.wilayah.forEach((elementW: any) => {
+                    wilayah.push(elementW.idWilayah);
+                  });
+                  let objMap = {
+                    id: dapil.id,
+                    id_province: province[i].id,
+                    id_kabkot: kabkot[ikc].id,
+                    province: province[i]._id,
+                    kabkot: kabkot[ikc]._id,
+                    nama: dapil.nama,
+                    jml_kursi: dapil.totalAlokasiKursi,
+                    idVersi: dapil.idVersi,
+                    noDapil: dapil.noDapil,
+                    statusCoterminous: dapil.statusCoterminous,
+                    wilayah
+                  };
+
+                  const exInDb = await Dapilkabkot.find({ id: dapil.id }).count();
+                  if (exInDb < 1) {
+                    myMap.push(objMap);
+                  }
+                }
+              }
+              await Dapilkabkot.insertMany(myMap);
+              noTfoundkc = false;
+              noTfound = false;
+              isFoudkc = true;
+              isFoud = true;
+              console.log('finish', province[i].nama);
+            }
+            ikc++;
+            if (ikc >= kabkot.length) {
+              noTfoundkc = false;
+            }
+          } while (noTfoundkc);
+        }
+        i++;
+        if (i > province.length) {
+          noTfound = false;
+        }
+      } while (noTfound);
+      if (!isFoud) {
+        logger.info('finish cronjob kec');
       }
     });
   }
