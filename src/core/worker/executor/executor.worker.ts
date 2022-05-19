@@ -2,6 +2,7 @@ import { Province } from '@core/model/Province';
 import { Kabkot } from '@core/model/Kabkot';
 import { Desa } from '@core/model/Desa';
 import { Kecamatan } from '@core/model/Kecamatan';
+import { Dapilri } from '@core/model/Dapilri';
 import * as cron from 'node-cron';
 import { CRON } from '@util/enum/common';
 import { logger } from '@util/logger/logger';
@@ -33,38 +34,76 @@ export class ExecutorWorker {
       resolve('sukses');
     });
   }
-  // getKabkot(): Promise<any> {
-  //   return new Promise(async (resolve, reject) => {
-  //     const axios = require('axios');
-  //     let pem = await axios.get(
-  //       'https://pemilu2019.kpu.go.id/static/json/wilayah/0.json'
-  //     );
-  //     let myMap = [];
-  //     interface Province {
-  //       nama: String;
-  //       dapil: String[];
-  //     }
-  //     for (const [key, value] of Object.entries(pem.data)) {
-  //       let prov = <Province>value;
-  //       let objMap = {
-  //         id: key,
-  //         nama: prov.nama,
-  //         dapil: prov.dapil
-  //       };
-  //       myMap.push(objMap);
-  //     }
-  //     Province.insertMany(myMap);
-  //     resolve('sukses');
-  //   });
-  // }
 }
 
 export class LocationSyncWorker {
-  constructor() {
-  }
+  constructor() {}
 
   startAllCronJob() {
     this.executeWorkerOperationDes();
+  }
+  executeWorkerOperationDapilDprri() {
+    cron.schedule(CRON.EVERY_5_SEC, async () => {
+      logger.info('start cronjob');
+      const province = await Province.find().lean();
+      let noTfound = true;
+      let i = 0;
+      let isFoud = false;
+      do {
+        const dapilri = await Dapilri.count({ province: province[i]._id });
+        console.log(i, province[i].nama);
+        if (dapilri < 1) {
+          console.log('found', province[i].nama);
+          const axios = require('axios');
+          let pem = await axios.get(
+            'https://infopemilu.kpu.go.id/pileg2019/api/dapil/1' +
+              province[i].id +
+              '/0'
+          );
+          let myMap:Array<any> = [];
+          interface Dapilri {
+            id: String;
+            nama: String;
+            wilayah: Array<String>;
+            jml_kursi: Number;
+            idVersi: String;
+            noDapil: String;
+            statusCoterminous: Boolean;
+          }
+          pem.data.dapil.forEach(async (value:any) => {
+            let dapil = <any>value;
+            let wilayah:Array<any> = [];
+            dapil.wilayah.forEach((elementW: any) => {
+              wilayah.push(elementW.idWilayah)
+            });
+            let objMap = {
+              id: dapil.id,
+              nama: dapil.nama,
+              jml_kursi: dapil.totalAlokasiKursi,
+              idVersi: dapil.idVersi,
+              noDapil: dapil.noDapil,
+              statusCoterminous: dapil.statusCoterminous,
+              wilayah
+            };
+            const exInDb = await Dapilri.find({ id: dapil.id }).count();
+            if (exInDb < 1) {
+              myMap.push(objMap);
+            }
+          });
+          await Dapilri.insertMany(myMap);
+          noTfound = false;
+          isFoud = true;
+          console.log('finish', province[i].nama);
+        }
+        i++;
+        if (i > province.length) {
+          noTfound = false;
+        }
+      } while (noTfound);
+      if (!isFoud) {
+        logger.info('finish cronjob kabkot');
+      }
+    });
   }
   executeWorkerOperationKabkot() {
     cron.schedule(CRON.EVERY_5_SEC, async () => {
@@ -98,7 +137,7 @@ export class LocationSyncWorker {
               province: province[i]._id,
               id_province: province[i].id
             };
-            const exInDb =  await Kabkot.find({ id:key }).count()
+            const exInDb = await Kabkot.find({ id: key }).count();
             if (exInDb < 1) {
               myMap.push(objMap);
             }
@@ -135,7 +174,7 @@ export class LocationSyncWorker {
           do {
             const kec = await Kecamatan.count({ kabkot: kabkot[ikc]._id });
             if (kec < 1) {
-              console.log('found',ikc, kabkot[ikc].nama);
+              console.log('found', ikc, kabkot[ikc].nama);
               const axios = require('axios');
               let pem = await axios.get(
                 'https://pemilu2019.kpu.go.id/static/json/wilayah/' +
@@ -191,21 +230,25 @@ export class LocationSyncWorker {
       let i = 0;
       let isFoud = false;
       do {
-        if(!province[i].foundDesa){
-          const kabkot = await Kabkot.find({ province: province[i]._id }).lean();
+        if (!province[i].foundDesa) {
+          const kabkot = await Kabkot.find({
+            province: province[i]._id
+          }).lean();
           if (kabkot.length > 0) {
             let noTfoundkc = true;
             let ikc = 0;
             let isFoudkc = false;
             do {
-              if(!kabkot[ikc].foundDesa){
+              if (!kabkot[ikc].foundDesa) {
                 const kec = await Kecamatan.find({ kabkot: kabkot[ikc]._id });
                 if (kec.length > 0) {
                   let noTfoundkcds = true;
                   let ikcds = 0;
                   let isFoudkcds = false;
                   do {
-                    const desa = await Desa.count({ kecamatan: kec[ikcds]._id });
+                    const desa = await Desa.count({
+                      kecamatan: kec[ikcds]._id
+                    });
                     if (desa < 1) {
                       console.log('found', kec[ikcds].nama);
                       const axios = require('axios');
@@ -245,7 +288,10 @@ export class LocationSyncWorker {
                     }
                     ikcds++;
                     if (ikcds >= kec.length) {
-                      await Kabkot.updateMany({_id:kabkot[ikc]._id}, { $set: { foundDesa: true } });
+                      await Kabkot.updateMany(
+                        { _id: kabkot[ikc]._id },
+                        { $set: { foundDesa: true } }
+                      );
                       noTfoundkcds = false;
                     }
                   } while (noTfoundkcds);
@@ -253,7 +299,10 @@ export class LocationSyncWorker {
               }
               ikc++;
               if (ikc >= kabkot.length) {
-                await Province.updateMany({_id:province[i]._id}, { $set: { foundDesa: true } });
+                await Province.updateMany(
+                  { _id: province[i]._id },
+                  { $set: { foundDesa: true } }
+                );
                 noTfoundkc = false;
               }
             } while (noTfoundkc);
