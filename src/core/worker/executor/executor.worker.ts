@@ -232,9 +232,15 @@ export class LocationSyncWorker {
                   for (const value of valueParent.dapil) {
                     let dapil = <any>value;
                     let wilayah: Array<any> = [];
+                    let wilayahDesa: Array<any> = [];
                     for (const elementW of dapil.wilayah) {
                       const prv:any = await Kecamatan.findOne({id:elementW.idWilayah}).lean()
-                      wilayah.push(prv._id);
+                      if(prv){
+                        wilayah.push(prv._id);
+                      }else{
+                        const kec:any = await Desa.findOne({id:elementW.idWilayah}).lean()
+                        wilayahDesa.push(kec._id);
+                      }
                     }
                     let objMap = {
                       id: dapil.id,
@@ -247,7 +253,8 @@ export class LocationSyncWorker {
                       idVersi: dapil.idVersi,
                       noDapil: dapil.noDapil,
                       statusCoterminous: dapil.statusCoterminous,
-                      wilayah
+                      wilayah,
+                      wilayahDesa
                     };
   
                     const exInDb = await Dapilkabkot.find({ id: dapil.id }).count();

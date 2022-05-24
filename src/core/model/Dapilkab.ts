@@ -8,6 +8,7 @@ const DapilkabkotSchema = new mongoose.Schema({
   id: String,
   nama: String,
   wilayah: [{ type: Schema.Types.ObjectId, ref: 'Kecamatan' }],
+  wilayahDesa: [{ type: Schema.Types.ObjectId, ref: 'Desa' }],
   jml_kursi: Number,
   idVersi: String,
   noDapil: String,
