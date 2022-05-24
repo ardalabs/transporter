@@ -6,6 +6,7 @@ const DapilprovSchema = new mongoose.Schema({
     id: String, 
     nama: String, 
     wilayah: [{ type: Schema.Types.ObjectId, ref: 'Kabkot' }],
+    wilayahKec: [{ type: Schema.Types.ObjectId, ref: 'Kecamatan' }],
     jml_kursi: Number,
     idVersi: String,
     noDapil: String,
