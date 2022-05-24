@@ -42,7 +42,7 @@ export class LocationSyncWorker {
   constructor() {}
 
   startAllCronJob() {
-    this.executeWorkerOperationDes();
+    this.executeWorkerOperationDapilDprkbakot();
   }
   executeWorkerOperationDapilDprri() {
     cron.schedule(CRON.EVERY_2_SEC, async () => {
