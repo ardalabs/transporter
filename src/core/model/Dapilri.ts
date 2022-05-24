@@ -4,7 +4,7 @@ const DapilriSchema = new mongoose.Schema({
     id_province: String, 
     id: String, 
     nama: String, 
-    wilayah: Array,
+    wilayah: [{ type: Schema.Types.ObjectId, ref: 'Kabkot' }],
     jml_kursi: Number,
     idVersi: String,
     noDapil: String,

@@ -18,7 +18,7 @@ export class DapilWorker {
   getDprri(): Promise<any> {
     return new Promise(async (resolve, reject) => {
       try {
-        const data = await this.qdprri.findAll({}, {});
+        const data = await this.qdprri.findAll({}, {populate:'wilayah'});
         resolve(data);
       } catch (error) {
         console.log(error);
@@ -29,7 +29,7 @@ export class DapilWorker {
   getDprriProv(id:any): Promise<any> {
     return new Promise(async (resolve, reject) => {
       try {
-        const data = await this.qdprri.findAll({id_province:id}, {});
+        const data = await this.qdprri.findAll({id_province:id}, {populate:'wilayah'});
         resolve(data);
       } catch (error) {
         console.log(error);
