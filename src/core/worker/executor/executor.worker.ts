@@ -234,6 +234,7 @@ export class LocationSyncWorker {
                     let wilayah: Array<any> = [];
                     let wilayahDesa: Array<any> = [];
                     for (const elementW of dapil.wilayah) {
+                      console.log(dapil.wilayah);
                       const prv:any = await Kecamatan.findOne({id:elementW.idWilayah}).lean()
                       if(prv){
                         wilayah.push(prv._id);
