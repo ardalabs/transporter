@@ -122,7 +122,7 @@ export class LocationSyncWorker {
     });
   }
   executeWorkerOperationKec() {
-    cron.schedule(CRON.EVERY_10_MIN, async () => {
+    cron.schedule(CRON.EVERY_1_MIN, async () => {
       logger.info('start cronjob');
       const province = await Province.find().lean();
       let noTfound = true;
