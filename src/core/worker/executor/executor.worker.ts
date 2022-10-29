@@ -70,7 +70,7 @@ export class LocationSyncWorker {
     this.executeWorkerOperationKec();
   }
   executeWorkerOperationKabkot() {
-    cron.schedule(CRON.EVERY_5_SEC, async () => {
+    cron.schedule(CRON.EVERY_1_MIN, async () => {
       logger.info('start cronjob');
       const province = await Province.find().lean();
       let noTfound = true;
@@ -122,7 +122,7 @@ export class LocationSyncWorker {
     });
   }
   executeWorkerOperationKec() {
-    cron.schedule(CRON.EVERY_2_SEC, async () => {
+    cron.schedule(CRON.EVERY_10_MIN, async () => {
       logger.info('start cronjob');
       const province = await Province.find().lean();
       let noTfound = true;
@@ -187,7 +187,7 @@ export class LocationSyncWorker {
     });
   }
   executeWorkerOperationDes() {
-    cron.schedule(CRON.EVERY_2_SEC, async () => {
+    cron.schedule(CRON.EVERY_5_MIN, async () => {
       logger.info('start cronjob');
       const province = await Province.find().lean();
       let noTfound = true;
