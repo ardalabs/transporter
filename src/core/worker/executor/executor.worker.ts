@@ -65,6 +65,8 @@ export class LocationSyncWorker {
 
   startAllCronJob() {
     this.executeWorkerOperationDes();
+    this.executeWorkerOperationKabkot();
+    this.executeWorkerOperationKec();
   }
   executeWorkerOperationKabkot() {
     cron.schedule(CRON.EVERY_5_SEC, async () => {
