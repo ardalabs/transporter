@@ -61,6 +61,7 @@ export class ExecutorWorker {
 
 export class LocationSyncWorker {
   constructor() {
+    this.startAllCronJob();
   }
 
   startAllCronJob() {
